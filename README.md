@@ -10,41 +10,47 @@ To build a robust dataset for training object detection and tracking models (YOL
 
 ---
 
-# Table of Contents
+## 📚 Table of Contents
 
--   [Objective](#objective)
--   [1. Define the Dataset Source](#1-define-the-dataset-source)
--   [2. Create the Dataset](#2-create-the-dataset)
--   [3. Clean the Dataset](#3-clean-the-dataset)
-    -   [3.1 Blur Filter](#31-blur-filter)
-    -   [3.2 Light Filter](#32-light-filter)
-    -   [3.3 Empty Frame Filter](#33-empty-frame-filter)
-    -   [3.4 Duplicate Frame Filter](#34-duplicate-frame-filter)
-    -   [3.5 Post-Cleaning Summary](#35-post-cleaning-summary)
--   [4. Building Our First Classification Model](#4-building-our-first-classification-model)
-    -   [4.1 What is a Classification Model?](#41-what-is-a-classification-model)
-    -   [4.2 Implementation](#42-implementation)
-    -   [4.3 Results](#43-resultats)
-    -   [4.4 Application on Our Dataset](#44-application-on-our-dataset)
--   [5. YOLO's Explanation](#5-yolos-explanation)
-    -   [5.1 What is YOLO?](#what-is-yolo)
-    -   [5.2 How Does YOLO Work?](#how-does-yolo-work)
-    -   [5.3 Why YOLO?](#why-yolo)
-    -   [5.4 YOLOv8 Model Variants](#yolov8-model-variants)
--   [6. Epochs Explanation](#6-epochs-explanation)
-    -   [6.1 What is an Epoch?](#what-is-an-epoch)
-    -   [6.2 Related Concepts](#related-concepts)
-    -   [6.3 What to Monitor During Training](#what-to-monitor-during-training)
-    -   [6.4 Why Multiple Epochs Are Needed](#why-multiple-epochs-are-needed)
--   [7. Building Our First Detection Model](#7-building-our-first-detection-model)
-    -   [7.1 What is a Detection Model?](#71-what-is-a-detection-model)
-    -   [7.2 What is an Annotation?](#72-what-is-an-annotation)
-    -   [7.3 Implementation](#73-implementation)
-    -   [7.4 Results](#74-resultats)
-    -   [7.5 Application on Our Dataset](#75-application-on-our-dataset)
--   [8. And What's Next?](#and-whats-next)
-    -   [Model on 4256 Images](#model-on-4256-images)
-    -   [Model on 9310 Images](#model-on-9310-images)
+1. [Objective](#-objective)
+2. [Define the Dataset Source](#1-define-the-dataset-source)
+3. [Create the Dataset](#2-create-the-dataset)
+4. [Clean the Dataset](#3-clean-the-dataset)
+    - [Blur Filter](#31-blur-filter)
+    - [Light Filter](#32-light-filter)
+    - [Empty Frame Filter](#33-empty-frame-filter)
+    - [Duplicate Frame Filter](#34-duplicate-frame-filter)
+    - [Post-Cleaning Summary](#35-post-cleaning-summary)
+5. [Building Our First Classification Model](#4-building-our-first-classification-model)
+    - [What is a Classification Model?](#41-what-is-a-classification-model)
+    - [Implementation](#42-implementation)
+    - [Results](#43-resultats)
+    - [Application on Our Dataset](#44-application-on-our-dataset)
+6. [YOLO's Explanation](#5-yolos-explanation)
+    - [What is YOLO?](#what-is-yolo)
+    - [How Does YOLO Work?](#how-does-yolo-work)
+    - [Why YOLO?](#why-yolo)
+    - [YOLOv8: The Latest Version](#yolov8-the-latest-version)
+    - [YOLOv8 Model Variants](#yolov8-model-variants)
+7. [Epoch's Explanation](#5-epochs-explanation)
+    - [What is an Epoch?](#what-is-an-epoch)
+    - [What to Monitor During Training](#what-to-monitor-during-training)
+    - [Why Multiple Epochs Are Needed](#why-multiple-epochs-are-needed)
+8. [Building Our First Detection Model](#6-building-our-first-detection-model)
+    - [What is a Detection Model?](#61-what-is-a-detection-model)
+    - [Qu'est-ce qu'une annotation ?](#62-quest-ce-quune-annotation-)
+    - [Implementation](#63-implementation)
+    - [Results](#64-resultats)
+    - [Application on Our Dataset](#65-application-on-our-dataset)
+9. [The Ball Tracker is Here](#7-the-ball-tracker-is-here)
+10. [What’s Next?](#and-whats-next)
+    - [Model on 4256 Images](#model-on-4256-images)
+    - [Model on 9310 Images](#model-on-9310-images)
+    - [Comparison of Models](#comparison-of-models)
+11. [Bonus Tools](#bonus-tool)
+    - [Annotation Checker](#annotation-checker)
+    - [Convert Annotation to XML](#converting-annotation-to-xml)
+    - [Merge Annotation XML](#merge-annotation-xml)
 
 ---
 
@@ -665,6 +671,11 @@ It is suitable for deployment or as a base model for pseudo-labeling and dataset
 We can then apply our model to the remaining photos in batch_00; it will pre-annotate the images.
 We use the [`detectBall.py`](scripts/detection/detectBall.py) script.
 
+## 7. The ball tracker is here
+
+Vous pouvez désormez traquer la balle sur une video, il vous suffit d'appliquer le modèle sur une vidéo.
+Vous pouvez le faire avec le script [`applyModelOnVideo.py`](scripts/tools/applyModelOnVideo.py)
+
 ## And what’s next?
 
 You can then repeat this action on more and more images, in order to refine your model, remembering to adapt Yolov8's version.
@@ -846,3 +857,51 @@ yolo detect train \
 -   The model performs very well on both detection and classification fronts.
 -   Excellent mAP and F1 score suggest reliable object localization and classification.
 -   Improvements could be made by reducing false positives on background data.
+
+### Comparison of models
+
+| Modèle      | Epoch Final | mAP50(B) | mAP50-95(B) | val/box_loss | val/cls_loss |
+| ----------- | ----------- | -------- | ----------- | ------------ | ------------ |
+| YOLO-N-1100 | 50          | 0.98567  | 0.71234     | 0.97126      | 0.44267      |
+| YOLO-S-4256 | 50          | 0.95249  | 0.75092     | 0.75587      | 0.51227      |
+| YOLO-S-9310 | 50          | 0.95613  | 0.80770     | 0.60510      | 0.42390      |
+
+-   **mAP50(B)** (mean Average Precision at 50% IoU):
+
+    -   All models perform exceptionally well with scores above 0.95.
+    -   **YOLO-N-1100** has the highest mAP50, indicating excellent detection performance at the 50% IoU threshold.
+
+-   **mAP50-95(B)** (mean Average Precision across IoU thresholds from 50% to 95%):
+
+    -   This metric is more stringent and reflects overall detection quality.
+    -   **YOLO-S-9310** achieves the best score here, suggesting better generalization and fine-grained accuracy.
+
+-   **val/box_loss** (Validation Box Loss):
+
+    -   Lower values indicate more precise bounding box localization.
+    -   **YOLO-S-9310** has the lowest box loss, meaning it localizes objects most accurately.
+
+-   **val/cls_loss** (Validation Classification Loss):
+    -   This measures classification errors.
+    -   Again, **YOLO-S-9310** leads with the lowest classification loss, indicating fewer misclassifications.
+
+---
+
+-   **YOLO-N-1100** shines in raw precision (mAP50) but lags slightly in refined accuracy (mAP50-95) and validation losses.
+-   **YOLO-S-4256** sits in the middle, showing solid but slightly less competitive performance.
+-   **YOLO-S-9310** appears to be the most balanced and high-performing model overall, with strong accuracy and minimal loss.
+
+## Bonus tool
+
+### Annotation Checker
+
+When you have put your images in one folder and your labels in another, you can use the script [`checkAnnotation.py`](scripts/tools/checkAnnotation.py) to know if all the images have an associated annotation.
+
+### Converting annotation to XML
+
+If you are using CVAT, you will not be able to import your pre-annotations with .txt files, you must convert them to XML and import them with the `CVAT 1.1` option.
+The script [`convertTxtToXml.py`](scripts/tools/convertTxtToXml.py) transforms all your .txt annotations into .xml.
+
+### Merge annotation XML
+
+CVAT will not accept thousands of xml files for annotations, you have to group them into a single file, that's what the script [`mergeXml.py`](scripts/tools/mergeXml.py) does.
